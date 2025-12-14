@@ -1,0 +1,93 @@
+/* Обновляем существующие стили и добавляем новые */
+
+.technology-item {
+  background: white;
+  border-radius: 10px;
+  padding: 20px;
+  margin-bottom: 20px;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.08);
+  transition: transform 0.2s, box-shadow 0.2s;
+  border: 1px solid #eaeaea;
+}
+
+.technology-item:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.12);
+}
+
+.tech-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 10px;
+}
+
+.tech-title {
+  margin: 0;
+  color: #2c3e50;
+  font-size: 18px;
+  flex: 1;
+}
+
+.tech-status {
+  padding: 4px 12px;
+  border-radius: 20px;
+  font-size: 12px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.status-not-started {
+  background-color: #f1f2f6;
+  color: #747d8c;
+}
+
+.status-in-progress {
+  background-color: #fff9e6;
+  color: #e6b400;
+}
+
+.status-completed {
+  background-color: #e6f7ee;
+  color: #00a854;
+}
+
+.tech-description {
+  color: #666;
+  margin: 10px 0;
+  line-height: 1.5;
+  font-size: 14px;
+}
+
+.tech-actions {
+  display: flex;
+  gap: 10px;
+  margin-top: 15px;
+  padding-top: 15px;
+  border-top: 1px solid #eee;
+}
+
+.action-btn {
+  flex: 1;
+  padding: 8px 12px;
+  border: 2px solid #e0e0e0;
+  background: white;
+  color: #666;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 13px;
+  font-weight: 500;
+  transition: all 0.2s;
+}
+
+.action-btn:hover {
+  background: #f5f5f5;
+  border-color: #d0d0d0;
+}
+
+.action-btn.active {
+  background: #4a90e2;
+  color: white;
+  border-color: #4a90e2;
+}
