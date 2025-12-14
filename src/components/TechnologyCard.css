@@ -1,0 +1,119 @@
+.technology-card {
+  background: white;
+  border-radius: 12px;
+  padding: 20px;
+  margin: 15px 0;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  transition: all 0.3s ease;
+  border-left: 5px solid #ddd;
+}
+
+.technology-card:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
+}
+
+/* Статусы */
+.technology-card.completed {
+  border-left-color: #4CAF50;
+  background-color: #f8fff8;
+}
+
+.technology-card.in-progress {
+  border-left-color: #FF9800;
+  background-color: #fffaf0;
+}
+
+.technology-card.not-started {
+  border-left-color: #9E9E9E;
+  background-color: #f9f9f9;
+}
+
+.card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 15px;
+}
+
+.card-title {
+  margin: 0;
+  font-size: 1.4rem;
+  color: #333;
+  flex: 1;
+}
+
+.status-badge {
+  padding: 5px 12px;
+  border-radius: 20px;
+  font-size: 0.85rem;
+  font-weight: 600;
+  margin-left: 15px;
+}
+
+.completed .status-badge {
+  background-color: #E8F5E9;
+  color: #2E7D32;
+}
+
+.in-progress .status-badge {
+  background-color: #FFF3E0;
+  color: #EF6C00;
+}
+
+.not-started .status-badge {
+  background-color: #F5F5F5;
+  color: #616161;
+}
+
+.card-body {
+  margin-bottom: 20px;
+}
+
+.card-description {
+  margin: 0;
+  color: #666;
+  line-height: 1.6;
+  font-size: 1rem;
+}
+
+.card-footer {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: 15px;
+  padding-top: 15px;
+  border-top: 1px solid #eee;
+}
+
+.progress-indicator {
+  flex: 1;
+  height: 8px;
+  background-color: #eee;
+  border-radius: 4px;
+  overflow: hidden;
+  margin-right: 15px;
+}
+
+.progress-bar {
+  height: 100%;
+  background-color: #4CAF50;
+  border-radius: 4px;
+  transition: width 0.5s ease;
+}
+
+.in-progress .progress-bar {
+  background-color: #FF9800;
+}
+
+.not-started .progress-bar {
+  background-color: #9E9E9E;
+}
+
+.progress-text {
+  font-weight: 600;
+  font-size: 0.9rem;
+  color: #555;
+  min-width: 40px;
+  text-align: right;
+}
