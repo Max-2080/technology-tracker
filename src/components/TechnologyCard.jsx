@@ -1,24 +1,40 @@
 import './TechnologyCard.css';
 
-function TechnologyCard({ title, description, status }) {
+function TechnologyCard({ id, title, description, status, onStatusChange }) {
+  // Функция для смены статуса
+  const handleStatusClick = () => {
+    // Определяем следующий статус в цикле
+    const statusOrder = ['not-started', 'in-progress', 'completed'];
+    const currentIndex = statusOrder.indexOf(status);
+    const nextIndex = (currentIndex + 1) % statusOrder.length;
+    const nextStatus = statusOrder[nextIndex];
+    
+    // Вызываем функцию из родителя
+    onStatusChange(id, nextStatus);
+  };
+
   // Определяем иконку и цвет в зависимости от статуса
   const getStatusInfo = () => {
     switch(status) {
       case 'completed':
-        return { icon: '✅', color: 'completed', text: 'Изучено' };
+        return { icon: '✅', color: 'completed', text: 'Изучено', nextAction: 'Начать заново' };
       case 'in-progress':
-        return { icon: '⏳', color: 'in-progress', text: 'В процессе' };
+        return { icon: '⏳', color: 'in-progress', text: 'В процессе', nextAction: 'Отметить как изученное' };
       case 'not-started':
-        return { icon: '📚', color: 'not-started', text: 'Не начато' };
+        return { icon: '📚', color: 'not-started', text: 'Не начато', nextAction: 'Начать изучение' };
       default:
-        return { icon: '❓', color: 'not-started', text: 'Не определено' };
+        return { icon: '❓', color: 'not-started', text: 'Не определено', nextAction: 'Начать' };
     }
   };
 
   const statusInfo = getStatusInfo();
 
   return (
-    <div className={`technology-card ${statusInfo.color}`}>
+    <div 
+      className={`technology-card ${statusInfo.color}`}
+      onClick={handleStatusClick}
+      title={`Кликните для смены статуса: ${statusInfo.nextAction}`}
+    >
       <div className="card-header">
         <h3 className="card-title">{title}</h3>
         <span className="status-badge">
@@ -44,6 +60,7 @@ function TechnologyCard({ title, description, status }) {
           {status === 'completed' ? '100%' : 
            status === 'in-progress' ? '50%' : '0%'}
         </span>
+        <span className="click-hint">🔁 Кликните для смены статуса</span>
       </div>
     </div>
   );

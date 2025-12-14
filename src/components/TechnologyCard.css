@@ -6,11 +6,30 @@
   box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
   transition: all 0.3s ease;
   border-left: 5px solid #ddd;
+  cursor: pointer;
+  position: relative;
+  overflow: hidden;
 }
 
 .technology-card:hover {
   transform: translateY(-3px);
   box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
+}
+
+.technology-card::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 3px;
+  background: linear-gradient(90deg, transparent, rgba(0, 0, 0, 0.1), transparent);
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
+
+.technology-card:hover::before {
+  opacity: 1;
 }
 
 /* Статусы */
@@ -27,6 +46,17 @@
 .technology-card.not-started {
   border-left-color: #9E9E9E;
   background-color: #f9f9f9;
+}
+
+/* Анимация смены статуса */
+.technology-card.status-changing {
+  animation: statusChange 0.5s ease;
+}
+
+@keyframes statusChange {
+  0% { transform: scale(1); }
+  50% { transform: scale(0.98); }
+  100% { transform: scale(1); }
 }
 
 .card-header {
@@ -49,6 +79,7 @@
   font-size: 0.85rem;
   font-weight: 600;
   margin-left: 15px;
+  transition: all 0.3s ease;
 }
 
 .completed .status-badge {
@@ -75,6 +106,11 @@
   color: #666;
   line-height: 1.6;
   font-size: 1rem;
+  transition: color 0.3s ease;
+}
+
+.technology-card:hover .card-description {
+  color: #444;
 }
 
 .card-footer {
@@ -84,6 +120,7 @@
   margin-top: 15px;
   padding-top: 15px;
   border-top: 1px solid #eee;
+  flex-wrap: wrap;
 }
 
 .progress-indicator {
@@ -93,13 +130,17 @@
   border-radius: 4px;
   overflow: hidden;
   margin-right: 15px;
+  min-width: 100px;
 }
 
 .progress-bar {
   height: 100%;
-  background-color: #4CAF50;
   border-radius: 4px;
-  transition: width 0.5s ease;
+  transition: width 0.5s ease, background-color 0.3s ease;
+}
+
+.completed .progress-bar {
+  background-color: #4CAF50;
 }
 
 .in-progress .progress-bar {
@@ -116,4 +157,21 @@
   color: #555;
   min-width: 40px;
   text-align: right;
+  margin-right: 15px;
+}
+
+.click-hint {
+  font-size: 0.8rem;
+  color: #888;
+  margin-top: 10px;
+  width: 100%;
+  text-align: center;
+  font-style: italic;
+  display: none;
+}
+
+@media (min-width: 768px) {
+  .click-hint {
+    display: block;
+  }
 }
