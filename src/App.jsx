@@ -1,116 +1,91 @@
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
+import useTechnologiesApi from './hooks/useTechnologiesApi';
+import RoadmapImporter from './components/RoadmapImporter';
+import TechnologySearch from './components/TechnologySearch';
+import TechnologyCard from './components/TechnologyCard';
+import TechnologyForm from './components/TechnologyForm';
 import './App.css';
-import TechList from './TechList';
-import SearchBar from './SearchBar';
 
 function App() {
-  // Инициализируем начальные технологии с полем notes
-  const initialTechnologies = [
-    {
-      id: 1,
-      title: 'React Components',
-      description: 'Изучение базовых компонентов',
-      status: 'not-started',
-      notes: ''
-    },
-    {
-      id: 2,
-      title: 'React State & Props',
-      description: 'Работа с состоянием и свойствами',
-      status: 'in-progress',
-      notes: ''
-    },
-    {
-      id: 3,
-      title: 'React Hooks',
-      description: 'Использование хуков (useState, useEffect)',
-      status: 'completed',
-      notes: ''
-    },
-    {
-      id: 4,
-      title: 'React Router',
-      description: 'Маршрутизация в React-приложениях',
-      status: 'not-started',
-      notes: ''
-    },
-    {
-      id: 5,
-      title: 'API Integration',
-      description: 'Работа с внешними API в React',
-      status: 'in-progress',
-      notes: ''
+    const { technologies, loading, error, refetch, addTechnology, deleteTechnology, updateTechnology } = useTechnologiesApi();
+    const [showForm, setShowForm] = useState(false);
+
+    if (loading) {
+        return (
+            <div className="app-loading">
+                <div className="spinner"></div>
+                <p>Загрузка технологий...</p>
+            </div>
+        );
     }
-  ];
 
-  // Загружаем данные из localStorage или используем начальные
-  const [technologies, setTechnologies] = useState(() => {
-    const saved = localStorage.getItem('techTrackerData');
-    return saved ? JSON.parse(saved) : initialTechnologies;
-  });
+    return (
+        <div className="app">
+            <header className="app-header">
+                <h1>🧠 Трекер изучения технологий</h1>
+                <div className="header-actions">
+                    <button onClick={refetch} className="btn btn-secondary">
+                        Обновить
+                    </button>
+                    <button onClick={() => setShowForm(!showForm)} className="btn btn-primary">
+                        {showForm ? '✖ Закрыть форму' : '➕ Добавить технологию'}
+                    </button>
+                </div>
+            </header>
 
-  const [searchQuery, setSearchQuery] = useState('');
+            {error && (
+                <div className="app-error card">
+                    <p>❌ {error}</p>
+                    <button onClick={refetch} className="btn btn-small">
+                        Попробовать снова
+                    </button>
+                </div>
+            )}
 
-  // Сохраняем технологии в localStorage при любом изменении
-  useEffect(() => {
-    localStorage.setItem('techTrackerData', JSON.stringify(technologies));
-    console.log('Данные сохранены в localStorage');
-  }, [technologies]);
+            <main className="app-main">
+                <div className="sidebar">
+                    <RoadmapImporter />
+                    <TechnologySearch />
+                </div>
 
-  // Функция для обновления статуса
-  const updateTechnologyStatus = (techId, newStatus) => {
-    setTechnologies(prevTech =>
-      prevTech.map(tech =>
-        tech.id === techId ? { ...tech, status: newStatus } : tech
-      )
-    );
-  };
+                <div className="content">
+                    {showForm && (
+                        <TechnologyForm
+                            onSubmit={addTechnology}
+                            onCancel={() => setShowForm(false)}
+                        />
+                    )}
 
-  // Функция для обновления заметок
-  const updateTechnologyNotes = (techId, newNotes) => {
-    setTechnologies(prevTech =>
-      prevTech.map(tech =>
-        tech.id === techId ? { ...tech, notes: newNotes } : tech
-      )
-    );
-  };
+                    <div className="technologies-header">
+                        <h2>📚 Список технологий ({technologies.length})</h2>
+                        <div className="stats">
+                            <span className="stat">
+                                Изучено: {technologies.filter(t => t.isStudied).length}
+                            </span>
+                            <span className="stat">
+                                В процессе: {technologies.filter(t => !t.isStudied).length}
+                            </span>
+                        </div>
+                    </div>
 
-  // Фильтрация технологий по поисковому запросу
-  const filteredTechnologies = technologies.filter(tech =>
-    tech.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
-    tech.description.toLowerCase().includes(searchQuery.toLowerCase())
-  );
+                    <div className="technologies-grid">
+                        {technologies.map(tech => (
+                            <TechnologyCard
+                                key={tech.id}
+                                technology={tech}
+                                onDelete={deleteTechnology}
+                                onUpdate={updateTechnology}
+                            />
+                        ))}
+                    </div>
+                </div>
+            </main>
 
-  return (
-    <div className="app">
-      <header className="app-header">
-        <h1>📚 Трекер изучения технологий</h1>
-        <p>Отслеживайте прогресс в изучении технологий</p>
-      </header>
-      
-      <main className="app-main">
-        <SearchBar 
-          searchQuery={searchQuery}
-          onSearchChange={setSearchQuery}
-          resultsCount={filteredTechnologies.length}
-          totalCount={technologies.length}
-        />
-        
-        <TechList 
-          technologies={filteredTechnologies}
-          onStatusChange={updateTechnologyStatus}
-          onNotesChange={updateTechnologyNotes}
-        />
-        
-        <div className="app-info">
-          <p>Всего технологий: {technologies.length} | Найдено: {filteredTechnologies.length}</p>
-          <p className="localstorage-info">
-            💾 Данные автоматически сохраняются в localStorage
-          </p>
+            <footer className="app-footer">
+                <p>© 2024 Трекер изучения технологий. Используется для учебных целей.</p>
+            </footer>
         </div>
-      </main>
-    </div>
-  );
+    );
 }
 
 export default App;

@@ -1,46 +1,81 @@
-import './QuickActions.css';
+import { useState } from 'react';
+import Modal from './Modal/Modal';
 
-function QuickActions({ technologies, onMarkAllCompleted, onResetAll, onRandomSelect }) {
-  // Фильтруем технологии со статусом "not-started"
-  const notStartedTechs = technologies.filter(tech => tech.status === 'not-started');
-  
+function QuickActions({ 
+  onMarkAllCompleted, 
+  onResetAll, 
+  technologies,
+  onExport 
+}) {
+  const [showExportModal, setShowExportModal] = useState(false);
+  const [exportData, setExportData] = useState('');
+
+  const handleExport = () => {
+    const data = {
+      exportedAt: new Date().toISOString(),
+      totalTechnologies: technologies.length,
+      completed: technologies.filter(t => t.status === 'completed').length,
+      technologies: technologies
+    };
+    const dataStr = JSON.stringify(data, null, 2);
+    setExportData(dataStr);
+    setShowExportModal(true);
+    
+    if (onExport) {
+      onExport(dataStr);
+    }
+  };
+
+  const downloadExport = () => {
+    const blob = new Blob([exportData], { type: 'application/json' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `technologies-export-${new Date().toISOString().split('T')[0]}.json`;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+  };
+
   return (
     <div className="quick-actions">
-      <h3 className="actions-title">Быстрые действия</h3>
-      <div className="actions-buttons">
-        <button 
-          className="action-btn mark-all-btn"
-          onClick={onMarkAllCompleted}
-          title="Отметить все технологии как изученные"
-        >
-          ✅ Отметить все как выполненные
+      <h3>Быстрые действия</h3>
+      <div className="action-buttons">
+        <button onClick={onMarkAllCompleted} className="btn btn-success">
+          ☑ Отметить все как выполненные
         </button>
-        
-        <button 
-          className="action-btn reset-btn"
-          onClick={onResetAll}
-          title="Сбросить все статусы на 'Не начато'"
-        >
-          🔄 Сбросить все статусы
+        <button onClick={onResetAll} className="btn btn-warning">
+          ↺ Сбросить все статусы
         </button>
-        
-        <button 
-          className="action-btn random-btn"
-          onClick={onRandomSelect}
-          disabled={notStartedTechs.length === 0}
-          title={notStartedTechs.length === 0 ? "Все технологии уже начаты или изучены" : "Выбрать случайную не начатую технологию"}
-        >
-          🎲 Случайный выбор
-          <span className="badge">{notStartedTechs.length} доступно</span>
+        <button onClick={handleExport} className="btn btn-info">
+          📤 Экспорт данных
         </button>
       </div>
-      
-      {notStartedTechs.length === 0 && (
-        <div className="warning-message">
-          ⚠️ Все технологии уже имеют статус "В процессе" или "Завершено". 
-          Невозможно выбрать новую технологию для изучения.
+
+      <Modal
+        isOpen={showExportModal}
+        onClose={() => setShowExportModal(false)}
+        title="Экспорт данных"
+      >
+        <div className="export-modal-content">
+          <p>Данные успешно подготовлены для экспорта!</p>
+          <p>Всего технологий: {technologies.length}</p>
+          <p>Завершено: {technologies.filter(t => t.status === 'completed').length}</p>
+          <div className="export-buttons">
+            <button onClick={downloadExport} className="btn btn-primary">
+              📥 Скачать JSON
+            </button>
+            <button onClick={() => setShowExportModal(false)} className="btn btn-secondary">
+              Закрыть
+            </button>
+          </div>
+          <div className="export-preview">
+            <small>Предпросмотр:</small>
+            <pre>{exportData.substring(0, 200)}...</pre>
+          </div>
         </div>
-      )}
+      </Modal>
     </div>
   );
 }
