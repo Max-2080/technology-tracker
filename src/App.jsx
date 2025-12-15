@@ -1,302 +1,202 @@
-import { useState } from 'react';
-import useTechnologiesApi from './hooks/useTechnologiesApi';
-import TechnologyFormEnhanced from './components/TechnologyFormEnhanced';
-import TechnologySearch from './components/TechnologySearch';
-import TechnologyCard from './components/TechnologyCard';
-import DataImportExport from './components/DataImportExport';
-import BulkEdit from './components/BulkEdit';
-import RoadmapImporter from './components/RoadmapImporter';
-import './App.css';
+import React, { useState, useEffect } from 'react';
+import { Container, Box, CssBaseline, AppBar, Toolbar, Typography, IconButton } from '@mui/material';
+import { ThemeProvider, createTheme } from '@mui/material/styles';
+import Brightness4Icon from '@mui/icons-material/Brightness4';
+import Brightness7Icon from '@mui/icons-material/Brightness7';
 
-function App() {
-    const { 
-        technologies, 
-        loading, 
-        error, 
-        refetch, 
-        addTechnology, 
-        deleteTechnology, 
-        updateTechnology 
-    } = useTechnologiesApi();
-    
-    const [showForm, setShowForm] = useState(false);
-    const [editingTech, setEditingTech] = useState(null);
+// Импорт наших компонентов
+import { CustomThemeProvider, useThemeContext } from './components/ui/ThemeContext';
+import { NotificationProvider, useNotification } from './components/ui/NotificationProvider';
+import TechnologyStack from './components/TechnologyStack';
+import Dashboard from './components/Dashboard';
 
-    // Обработчик сохранения технологии
-    const handleSaveTechnology = (techData) => {
-        if (editingTech) {
-            updateTechnology(editingTech.id, techData);
-            setEditingTech(null);
-        } else {
-            addTechnology(techData);
-        }
-        setShowForm(false);
-    };
+// Компонент для переключения темы (можно вынести отдельно)
+function ThemeToggleButton() {
+  const { mode, toggleTheme } = useThemeContext();
+  
+  return (
+    <IconButton 
+      onClick={toggleTheme} 
+      color="inherit"
+      aria-label={`Переключить на ${mode === 'light' ? 'тёмную' : 'светлую'} тему`}
+      sx={{ ml: 2 }}
+    >
+      {mode === 'light' ? <Brightness4Icon /> : <Brightness7Icon />}
+    </IconButton>
+  );
+}
 
-    // Обработчик редактирования технологии
-    const handleEditTech = (tech) => {
-        setEditingTech(tech);
-        setShowForm(true);
-        window.scrollTo({ top: 0, behavior: 'smooth' });
-    };
-
-    // Обработчик отмены формы
-    const handleCancelForm = () => {
-        setShowForm(false);
-        setEditingTech(null);
-    };
-
-    // Обработчик импорта данных
-    const handleImportData = (importedData) => {
-        // Заменяем текущие данные импортированными
-        // В реальном приложении здесь была бы логика объединения или замены
-        importedData.forEach(tech => {
-            if (!technologies.find(t => t.id === tech.id)) {
-                addTechnology(tech);
-            }
-        });
-    };
-
-    // Статистика
-    const studiedCount = technologies.filter(t => t.isStudied).length;
-    const totalCount = technologies.length;
-    const progressPercentage = totalCount > 0 ? Math.round((studiedCount / totalCount) * 100) : 0;
-
-    // Технологии с истекшим дедлайном
-    const overdueTechs = technologies.filter(tech => {
-        if (!tech.deadline) return false;
-        const deadlineDate = new Date(tech.deadline);
-        const today = new Date();
-        today.setHours(0, 0, 0, 0);
-        return deadlineDate < today && !tech.isStudied;
-    });
-
-    if (loading) {
-        return (
-            <div className="app-loading">
-                <div className="spinner"></div>
-                <p>Загрузка технологий...</p>
-            </div>
-        );
+// Компонент заголовка приложения
+function AppHeader() {
+  const { mode } = useThemeContext();
+  const [title, setTitle] = useState('Управление технологиями');
+  
+  // Пример изменения заголовка в зависимости от темы
+  useEffect(() => {
+    if (mode === 'dark') {
+      setTitle('Технологии (Ночной режим)');
+    } else {
+      setTitle('Управление технологиями');
     }
+  }, [mode]);
+  
+  return (
+    <AppBar position="static" color="primary" elevation={1}>
+      <Toolbar>
+        <Typography variant="h6" component="div" sx={{ flexGrow: 1 }}>
+          {title}
+        </Typography>
+        <Typography variant="body2" sx={{ mr: 2 }}>
+          React + Material-UI
+        </Typography>
+        <ThemeToggleButton />
+      </Toolbar>
+    </AppBar>
+  );
+}
 
-    return (
-        <div className="app">
-            {/* Заголовок приложения */}
-            <header className="app-header">
-                <div className="header-content">
-                    <h1>
-                        <span role="img" aria-label="мозг">🧠</span> Трекер изучения технологий
-                    </h1>
-                    <div className="header-stats">
-                        <div className="stat-item">
-                            <span className="stat-label">Изучено:</span>
-                            <span className="stat-value studied">{studiedCount}</span>
-                        </div>
-                        <div className="stat-item">
-                            <span className="stat-label">Всего:</span>
-                            <span className="stat-value total">{totalCount}</span>
-                        </div>
-                        <div className="stat-item">
-                            <span className="stat-label">Прогресс:</span>
-                            <span className="stat-value progress">{progressPercentage}%</span>
-                        </div>
-                    </div>
-                </div>
-                
-                <div className="header-actions">
-                    <button 
-                        onClick={refetch} 
-                        className="btn btn-secondary"
-                        aria-label="Обновить список технологий"
-                    >
-                        🔄 Обновить
-                    </button>
-                    <button 
-                        onClick={() => {
-                            setEditingTech(null);
-                            setShowForm(!showForm);
-                        }} 
-                        className="btn btn-primary"
-                        aria-label={showForm ? 'Закрыть форму добавления' : 'Добавить новую технологию'}
-                    >
-                        {showForm ? '✖ Закрыть' : '➕ Добавить'}
-                    </button>
-                </div>
-            </header>
-
-            {/* Область статуса для скринридеров */}
-            <div
-                role="status"
-                aria-live="polite"
-                aria-atomic="true"
-                className="sr-only"
-            >
-                {error && `Ошибка: ${error}`}
-                {loading && 'Загрузка данных...'}
-                {!loading && !error && `Загружено ${technologies.length} технологий`}
-            </div>
-
-            {/* Основное содержимое */}
-            <main className="app-main">
-                {/* Боковая панель */}
-                <aside className="sidebar">
-                    <DataImportExport 
-                        technologies={technologies}
-                        onImport={handleImportData}
-                    />
-                    
-                    <RoadmapImporter />
-                    
-                    <TechnologySearch />
-                    
-                    <BulkEdit 
-                        technologies={technologies}
-                        onUpdate={updateTechnology}
-                    />
-                    
-                    {/* Статистика и предупреждения */}
-                    {overdueTechs.length > 0 && (
-                        <div className="overdue-warning">
-                            <h4>⚠️ Просроченные дедлайны</h4>
-                            <p>Следующие технологии требуют внимания:</p>
-                            <ul className="overdue-list">
-                                {overdueTechs.map(tech => (
-                                    <li key={tech.id}>
-                                        <strong>{tech.title}</strong>
-                                        <span>до {new Date(tech.deadline).toLocaleDateString('ru-RU')}</span>
-                                    </li>
-                                ))}
-                            </ul>
-                        </div>
-                    )}
-                </aside>
-
-                {/* Основной контент */}
-                <div className="content">
-                    {/* Форма (если открыта) */}
-                    {showForm && (
-                        <TechnologyFormEnhanced
-                            onSave={handleSaveTechnology}
-                            onCancel={handleCancelForm}
-                            initialData={editingTech || {}}
-                        />
-                    )}
-
-                    {/* Заголовок и управление списком */}
-                    <div className="content-header">
-                        <h2>
-                            <span role="img" aria-label="книги">📚</span> Мои технологии
-                            <span className="count-badge">{technologies.length}</span>
-                        </h2>
-                        
-                        <div className="content-filters">
-                            <div className="filter-tabs">
-                                <button className="filter-tab active">Все</button>
-                                <button className="filter-tab">Изученные ({studiedCount})</button>
-                                <button className="filter-tab">В процессе ({totalCount - studiedCount})</button>
-                            </div>
-                            
-                            <div className="sort-controls">
-                                <label htmlFor="sort-by">Сортировать:</label>
-                                <select id="sort-by" className="sort-select">
-                                    <option value="title">По названию</option>
-                                    <option value="deadline">По дедлайну</option>
-                                    <option value="difficulty">По сложности</option>
-                                    <option value="category">По категории</option>
-                                </select>
-                            </div>
-                        </div>
-                    </div>
-
-                    {/* Список технологий */}
-                    {technologies.length === 0 ? (
-                        <div className="empty-state">
-                            <div className="empty-icon">📚</div>
-                            <h3>Пока нет технологий</h3>
-                            <p>Добавьте свою первую технологию для отслеживания прогресса изучения</p>
-                            <button 
-                                onClick={() => setShowForm(true)} 
-                                className="btn btn-primary"
-                            >
-                                ➕ Добавить первую технологию
-                            </button>
-                        </div>
-                    ) : (
-                        <>
-                            {/* Прогресс бар */}
-                            <div className="progress-container">
-                                <div className="progress-header">
-                                    <span>Общий прогресс изучения</span>
-                                    <span>{progressPercentage}%</span>
-                                </div>
-                                <div className="progress-bar">
-                                    <div 
-                                        className="progress-fill"
-                                        style={{ width: `${progressPercentage}%` }}
-                                        aria-valuenow={progressPercentage}
-                                        aria-valuemin="0"
-                                        aria-valuemax="100"
-                                        role="progressbar"
-                                    ></div>
-                                </div>
-                                <div className="progress-stats">
-                                    <span className="studied-count">
-                                        <span className="stat-dot studied"></span>
-                                        Изучено: {studiedCount}
-                                    </span>
-                                    <span className="remaining-count">
-                                        <span className="stat-dot remaining"></span>
-                                        Осталось: {totalCount - studiedCount}
-                                    </span>
-                                </div>
-                            </div>
-
-                            {/* Сетка карточек */}
-                            <div className="technologies-grid">
-                                {technologies.map(tech => (
-                                    <TechnologyCard
-                                        key={tech.id}
-                                        technology={tech}
-                                        onDelete={deleteTechnology}
-                                        onUpdate={updateTechnology}
-                                        onEdit={handleEditTech}
-                                    />
-                                ))}
-                            </div>
-                        </>
-                    )}
-                </div>
-            </main>
-
-            {/* Футер */}
-            <footer className="app-footer">
-                <div className="footer-content">
-                    <p>© {new Date().getFullYear()} Трекер изучения технологий</p>
-                    <p className="footer-info">
-                        Для учебных целей | React | Доступность | Валидация форм
-                    </p>
-                    <div className="footer-links">
-                        <button 
-                            className="footer-link"
-                            onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
-                            aria-label="Вернуться к началу страницы"
-                        >
-                            ↑ Наверх
-                        </button>
-                        <span className="footer-separator">•</span>
-                        <button 
-                            className="footer-link"
-                            onClick={() => window.print()}
-                            aria-label="Распечатать страницу"
-                        >
-                            🖨️ Печать
-                        </button>
-                    </div>
-                </div>
-            </footer>
-        </div>
+// Основное содержимое приложения с переключением вкладок
+function AppContent() {
+  const [activeTab, setActiveTab] = useState(0);
+  const { showNotification } = useNotification();
+  
+  // Пример данных технологий
+  const [technologies, setTechnologies] = useState([
+    { id: 1, title: 'React', category: 'frontend', status: 'completed', description: 'Библиотека для UI' },
+    { id: 2, title: 'Node.js', category: 'backend', status: 'in-progress', description: 'Серверная платформа' },
+    { id: 3, title: 'MongoDB', category: 'database', status: 'not-started', description: 'NoSQL база данных' },
+    { id: 4, title: 'Material-UI', category: 'ui-library', status: 'completed', description: 'Библиотека компонентов' },
+    { id: 5, title: 'Express.js', category: 'backend', status: 'in-progress', description: 'Фреймворк для Node.js' },
+  ]);
+  
+  // Обработчик изменения статуса технологии
+  const handleStatusChange = (id, newStatus) => {
+    setTechnologies(prev => 
+      prev.map(tech => 
+        tech.id === id ? { ...tech, status: newStatus } : tech
+      )
     );
+    
+    // Показываем уведомление
+    const techName = technologies.find(t => t.id === id)?.title || 'Технология';
+    const statusText = {
+      'completed': 'завершена',
+      'in-progress': 'в процессе',
+      'not-started': 'не начата'
+    }[newStatus] || 'изменена';
+    
+    showNotification(`${techName} помечена как ${statusText}`, 'success', 3000);
+  };
+  
+  // Обработчик добавления новой технологии
+  const handleAddTechnology = (newTech) => {
+    const newId = Math.max(...technologies.map(t => t.id)) + 1;
+    const techToAdd = {
+      ...newTech,
+      id: newId,
+      status: newTech.status || 'not-started'
+    };
+    
+    setTechnologies(prev => [...prev, techToAdd]);
+    showNotification(`Технология "${newTech.title}" добавлена!`, 'success', 4000);
+  };
+  
+  // Обработчик удаления технологии
+  const handleDeleteTechnology = (id) => {
+    const techName = technologies.find(t => t.id === id)?.title || 'Технология';
+    setTechnologies(prev => prev.filter(tech => tech.id !== id));
+    showNotification(`Технология "${techName}" удалена`, 'warning', 3000);
+  };
+  
+  // Тестовые уведомления (можно удалить)
+  const testNotifications = () => {
+    showNotification('Это информационное уведомление', 'info');
+    setTimeout(() => showNotification('Успешное действие выполнено!', 'success'), 1000);
+    setTimeout(() => showNotification('Внимание! Проверьте данные', 'warning'), 2000);
+    setTimeout(() => showNotification('Ошибка при выполнении', 'error'), 3000);
+  };
+  
+  return (
+    <Container maxWidth="xl" sx={{ mt: 3, mb: 4 }}>
+      <Box sx={{ 
+        display: 'flex', 
+        gap: 2, 
+        mb: 3, 
+        flexWrap: 'wrap',
+        justifyContent: 'center'
+      }}>
+        <IconButton 
+          color="primary" 
+          variant="outlined"
+          onClick={() => setActiveTab(0)}
+          sx={{ 
+            border: activeTab === 0 ? '2px solid' : '1px solid',
+            borderColor: activeTab === 0 ? 'primary.main' : 'divider'
+          }}
+        >
+          📋 Список
+        </IconButton>
+        <IconButton 
+          color="primary" 
+          variant="outlined"
+          onClick={() => setActiveTab(1)}
+          sx={{ 
+            border: activeTab === 1 ? '2px solid' : '1px solid',
+            borderColor: activeTab === 1 ? 'primary.main' : 'divider'
+          }}
+        >
+          📊 Дашборд
+        </IconButton>
+        <IconButton 
+          color="secondary" 
+          onClick={testNotifications}
+          sx={{ border: '1px solid', borderColor: 'divider' }}
+        >
+          🔔 Тест уведомлений
+        </IconButton>
+      </Box>
+      
+      {activeTab === 0 ? (
+        <TechnologyStack 
+          technologies={technologies}
+          onStatusChange={handleStatusChange}
+          onAddTechnology={handleAddTechnology}
+          onDeleteTechnology={handleDeleteTechnology}
+        />
+      ) : (
+        <Dashboard technologies={technologies} />
+      )}
+      
+      <Box sx={{ mt: 4, pt: 2, borderTop: 1, borderColor: 'divider', textAlign: 'center' }}>
+        <Typography variant="body2" color="text.secondary">
+          Практическое занятие №26: Material-UI
+        </Typography>
+        <Typography variant="caption" color="text.secondary">
+          Адаптивный дизайн • Темная/светлая тема • Уведомления
+        </Typography>
+      </Box>
+    </Container>
+  );
+}
+
+// Обертка для провайдеров
+function AppWrapper() {
+  return (
+    <CustomThemeProvider>
+      <NotificationProvider>
+        <CssBaseline />
+        <Box sx={{ display: 'flex', flexDirection: 'column', minHeight: '100vh' }}>
+          <AppHeader />
+          <AppContent />
+        </Box>
+      </NotificationProvider>
+    </CustomThemeProvider>
+  );
+}
+
+// Главный экспорт
+function App() {
+  return <AppWrapper />;
 }
 
 export default App;
