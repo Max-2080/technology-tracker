@@ -1,0 +1,368 @@
+.bulk-edit {
+    background: white;
+    border-radius: 12px;
+    padding: 20px;
+    margin-bottom: 30px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+    border: 1px solid #eaeaea;
+}
+
+.bulk-edit-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+}
+
+.bulk-edit-header h3 {
+    margin: 0;
+    color: #2c3e50;
+    font-size: 1.4rem;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.toggle-btn {
+    background: linear-gradient(135deg, #3498db, #2980b9);
+    color: white;
+    border: none;
+    padding: 8px 16px;
+    border-radius: 6px;
+    cursor: pointer;
+    font-weight: 600;
+    font-size: 14px;
+    transition: all 0.2s;
+}
+
+.toggle-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgba(52, 152, 219, 0.2);
+}
+
+.bulk-edit-form {
+    animation: slideDown 0.3s ease;
+}
+
+@keyframes slideDown {
+    from {
+        opacity: 0;
+        transform: translateY(-10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* Информация о выборе */
+.selection-info {
+    background-color: #f8f9fa;
+    border-radius: 8px;
+    padding: 20px;
+    margin-bottom: 25px;
+}
+
+.selection-stats {
+    display: flex;
+    align-items: center;
+    gap: 20px;
+    margin-bottom: 15px;
+    flex-wrap: wrap;
+}
+
+.stat {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    font-size: 15px;
+    color: #555;
+}
+
+.stat strong {
+    color: #2c3e50;
+    font-size: 18px;
+}
+
+.select-all-btn {
+    background-color: #e3f2fd;
+    color: #1976d2;
+    border: 2px solid #bbdefb;
+    padding: 6px 12px;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 13px;
+    font-weight: 600;
+    transition: all 0.2s;
+}
+
+.select-all-btn:hover {
+    background-color: #bbdefb;
+    transform: translateY(-1px);
+}
+
+.selected-list {
+    margin-top: 15px;
+    padding-top: 15px;
+    border-top: 1px solid #e0e0e0;
+}
+
+.selected-list p {
+    margin: 0 0 10px 0;
+    font-weight: 600;
+    color: #2c3e50;
+}
+
+.selected-techs {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+}
+
+.tech-tag {
+    background: linear-gradient(135deg, #4a6fa5, #2c3e50);
+    color: white;
+    padding: 6px 12px;
+    border-radius: 20px;
+    font-size: 13px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    animation: fadeIn 0.3s ease;
+}
+
+.remove-tag {
+    background: none;
+    border: none;
+    color: white;
+    cursor: pointer;
+    font-size: 16px;
+    font-weight: bold;
+    padding: 0;
+    width: 18px;
+    height: 18px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+    transition: all 0.2s;
+}
+
+.remove-tag:hover {
+    background-color: rgba(255, 255, 255, 0.2);
+    transform: scale(1.1);
+}
+
+/* Форма обновлений */
+.updates-form {
+    background-color: #f0f7ff;
+    border-radius: 8px;
+    padding: 25px;
+    margin-bottom: 25px;
+    border: 2px solid #bbdefb;
+}
+
+.updates-form h4 {
+    margin-top: 0;
+    margin-bottom: 20px;
+    color: #1976d2;
+    font-size: 1.2rem;
+}
+
+.update-fields {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 20px;
+    margin-bottom: 25px;
+}
+
+.update-field {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.update-field label {
+    font-weight: 600;
+    color: #2c3e50;
+    font-size: 14px;
+}
+
+.update-field .form-select,
+.update-field .form-input {
+    width: 100%;
+    padding: 10px 14px;
+    border: 2px solid #bbdefb;
+    border-radius: 6px;
+    font-size: 14px;
+    background-color: white;
+}
+
+.update-field .form-select:focus,
+.update-field .form-input:focus {
+    outline: none;
+    border-color: #1976d2;
+    box-shadow: 0 0 0 3px rgba(25, 118, 210, 0.2);
+}
+
+.bulk-actions {
+    display: flex;
+    justify-content: flex-end;
+    gap: 12px;
+    padding-top: 20px;
+    border-top: 1px solid #bbdefb;
+}
+
+/* Список технологий для выбора */
+.tech-list {
+    max-height: 300px;
+    overflow-y: auto;
+    border: 1px solid #e0e0e0;
+    border-radius: 8px;
+    padding: 20px;
+}
+
+.tech-list h4 {
+    margin-top: 0;
+    margin-bottom: 15px;
+    color: #2c3e50;
+    font-size: 1.2rem;
+}
+
+.tech-checkboxes {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.tech-checkbox-item {
+    display: flex;
+    align-items: center;
+    padding: 12px 15px;
+    border-radius: 6px;
+    transition: background-color 0.2s;
+}
+
+.tech-checkbox-item:hover {
+    background-color: #f5f5f5;
+}
+
+.tech-checkbox-item:has(.tech-checkbox:checked) {
+    background-color: #e3f2fd;
+    border-left: 3px solid #1976d2;
+}
+
+.tech-checkbox {
+    margin-right: 15px;
+    width: 20px;
+    height: 20px;
+    cursor: pointer;
+}
+
+.tech-label {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    cursor: pointer;
+    font-size: 15px;
+}
+
+.tech-name {
+    flex: 1;
+    font-weight: 500;
+    color: #333;
+}
+
+.tech-category {
+    background-color: #e8f4fc;
+    color: #2980b9;
+    padding: 3px 10px;
+    border-radius: 12px;
+    font-size: 12px;
+    font-weight: 600;
+    text-transform: uppercase;
+}
+
+.tech-category.frontend { background-color: #e3f2fd; color: #1976d2; }
+.tech-category.backend { background-color: #f3e5f5; color: #7b1fa2; }
+.tech-category.database { background-color: #e8f5e9; color: #2e7d32; }
+.tech-category.devops { background-color: #fff3e0; color: #ef6c00; }
+.tech-category.mobile { background-color: #fce4ec; color: #c2185b; }
+.tech-category.language { background-color: #e1f5fe; color: #0277bd; }
+.tech-category.tool { background-color: #f5f5f5; color: #616161; }
+.tech-category.other { background-color: #f9fbe7; color: #827717; }
+
+.tech-status {
+    font-size: 18px;
+}
+
+.tech-status.studied {
+    color: #27ae60;
+}
+
+.tech-status.not-studied {
+    color: #f39c12;
+}
+
+/* Адаптивность */
+@media (max-width: 768px) {
+    .bulk-edit {
+        padding: 15px;
+    }
+    
+    .selection-stats {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 10px;
+    }
+    
+    .update-fields {
+        grid-template-columns: 1fr;
+    }
+    
+    .bulk-actions {
+        flex-direction: column;
+    }
+    
+    .bulk-actions .btn {
+        width: 100%;
+    }
+    
+    .tech-label {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 5px;
+    }
+}
+
+/* Полоса прокрутки */
+.tech-list::-webkit-scrollbar {
+    width: 8px;
+}
+
+.tech-list::-webkit-scrollbar-track {
+    background: #f1f1f1;
+    border-radius: 4px;
+}
+
+.tech-list::-webkit-scrollbar-thumb {
+    background: #bdc3c7;
+    border-radius: 4px;
+}
+
+.tech-list::-webkit-scrollbar-thumb:hover {
+    background: #95a5a6;
+}
+
+/* Фокус для доступности */
+.tech-checkbox:focus-visible,
+.form-select:focus-visible,
+.form-input:focus-visible,
+.toggle-btn:focus-visible,
+.select-all-btn:focus-visible,
+.remove-tag:focus-visible,
+.btn:focus-visible {
+    outline: 3px solid #3498db;
+    outline-offset: 2px;
+}
